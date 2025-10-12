@@ -59,21 +59,18 @@ const userMissionController = require('../controllers/api/clients/userMissionsCo
  * @swagger
  * /:
  *   get:
- *     summary: API Welcome endpoint
- *     description: Returns welcome message for VRAS API
+ *     summary: API Home - Redirects to Documentation
+ *     description: Redirects to the Swagger API documentation
  *     tags: [Authentication]
  *     responses:
- *       200:
- *         description: Welcome message
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
+ *       302:
+ *         description: Redirect to API documentation
  */
 
 router.get('/', (req, res) => {
     try {
-        return response(res, req.body, 'Welcome API', 200);
+        // Redirect to the API documentation
+        return res.redirect('/api-docs');
     } catch (error) {
         return response(res, req.body, error.message, 500);
     }
