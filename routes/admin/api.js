@@ -1,3 +1,16 @@
+/**
+ * @swagger
+ * tags:
+ *   - name: Admin Authentication
+ *     description: Admin authentication and authorization
+ *   - name: Admin User Management
+ *     description: Admin user management operations
+ *   - name: Admin Online Tracking
+ *     description: Real-time online user tracking and management
+ *   - name: Admin Content Management
+ *     description: Admin content and system management
+ */
+
 const express = require('express');
 const group = require('express-group-routes');
 
@@ -29,7 +42,8 @@ const scenariosController = require('../../controllers/admin/api/scenariosContro
 const clientsController = require('../../controllers/admin/api/clientsController');
 const dasboardController = require('../../controllers/admin/api/dashboardController');
 const rolesController = require('../../controllers/admin/api/roleController');
-const adminController = require('../../controllers/admin/api/adminController')
+const adminController = require('../../controllers/admin/api/adminController');
+const onlineUsersController = require('../../controllers/admin/api/onlineUsersController');
 
 router.get('/', (req, res) => {
     try {
@@ -180,6 +194,221 @@ router.group('/videos', (router) => {
     router.get('/show/:id', videosController.show);
     router.put('/update/:id', videosController.update);
     router.delete('/destroy/:id', videosController.destroy);
+});
+
+// Online Users Management Routes
+/**
+ * @swagger
+ * /admin/online-users:
+ *   get:
+ *     summary: Get all online users
+ *     description: Retrieve list of currently online users with filtering and pagination
+ *     tags: [Admin Online Tracking]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: length
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of items per page
+ *       - in: query
+ *         name: clientId
+ *         schema:
+ *           type: integer
+ *         description: Filter by client ID
+ *       - in: query
+ *         name: role
+ *         schema:
+ *           type: string
+ *           enum: [admin, client, instructor, user, all]
+ *         description: Filter by user role
+ *       - in: query
+ *         name: keywords
+ *         schema:
+ *           type: string
+ *         description: Search by name, email, or username
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [name, role, lastLogin]
+ *           default: lastLogin
+ *         description: Sort field
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *           enum: [ASC, DESC]
+ *           default: DESC
+ *         description: Sort order
+ *     responses:
+ *       200:
+ *         description: Online users retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: object
+ *                       properties:
+ *                         onlineUsers:
+ *                           type: array
+ *                           items:
+ *                             allOf:
+ *                               - $ref: '#/components/schemas/User'
+ *                               - type: object
+ *                                 properties:
+ *                                   client:
+ *                                     $ref: '#/components/schemas/Client'
+ *                                   departments:
+ *                                     type: array
+ *                                     items:
+ *                                       type: object
+ *                                       properties:
+ *                                         id:
+ *                                           type: integer
+ *                                         name:
+ *                                           type: string
+ *                         total:
+ *                           type: integer
+ *                         page:
+ *                           type: integer
+ *                         length:
+ *                           type: integer
+ *                         totalPages:
+ *                           type: integer
+ */
+
+/**
+ * @swagger
+ * /admin/online-users/stats:
+ *   get:
+ *     summary: Get online users statistics
+ *     description: Retrieve statistics about online users including counts by role and client
+ *     tags: [Admin Online Tracking]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: clientId
+ *         schema:
+ *           type: integer
+ *         description: Filter statistics by client ID
+ *     responses:
+ *       200:
+ *         description: Online statistics retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: object
+ *                       properties:
+ *                         totalOnline:
+ *                           type: integer
+ *                         recentlyOnline:
+ *                           type: integer
+ *                         byRole:
+ *                           type: array
+ *                           items:
+ *                             type: object
+ *                             properties:
+ *                               role:
+ *                                 type: string
+ *                               count:
+ *                                 type: integer
+ *                         byClient:
+ *                           type: array
+ *                           items:
+ *                             type: object
+ *                             properties:
+ *                               clientId:
+ *                                 type: integer
+ *                               count:
+ *                                 type: integer
+ *                               client:
+ *                                 type: object
+ *                                 properties:
+ *                                   name:
+ *                                     type: string
+ *                         timestamp:
+ *                           type: string
+ *                           format: date-time
+ */
+
+/**
+ * @swagger
+ * /admin/online-users/activity/{userId}:
+ *   get:
+ *     summary: Get user activity details
+ *     description: Retrieve detailed activity information for a specific user
+ *     tags: [Admin Online Tracking]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: User ID
+ *       - in: query
+ *         name: days
+ *         schema:
+ *           type: integer
+ *           default: 7
+ *         description: Number of days to retrieve activity for
+ *     responses:
+ *       200:
+ *         description: User activity retrieved successfully
+ *       404:
+ *         description: User not found
+ */
+
+/**
+ * @swagger
+ * /admin/online-users/force-logout/{userId}:
+ *   post:
+ *     summary: Force logout a user
+ *     description: Force logout a specific user (admin function)
+ *     tags: [Admin Online Tracking]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: User ID to force logout
+ *     responses:
+ *       200:
+ *         description: User force logged out successfully
+ *       404:
+ *         description: User not found
+ */
+
+router.group('/online-users', (router) => {
+    router.use([authentication, roleAuthorization('admin')]);
+    
+    router.get('/', onlineUsersController.getOnlineUsers);
+    router.get('/stats', onlineUsersController.getOnlineStats);
+    router.get('/activity/:userId', onlineUsersController.getUserActivity);
+    router.post('/force-logout/:userId', onlineUsersController.forceLogoutUser);
 });
 
 module.exports = router;

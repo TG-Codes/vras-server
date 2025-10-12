@@ -273,6 +273,15 @@ const vrLogin = async (req, res) => {
             }
         }
 
+        // Set user as online for VR login
+        user.isOnline = 1;
+        await user.save();
+
+        if (user.client) {
+            user.client.isOnline = 1;
+            await user.client.save();
+        }
+
         return response(res, user, 'User vrlogin successfull.', 200);
     } catch (error) {
         return response(res, req.body, error.message, 500);
