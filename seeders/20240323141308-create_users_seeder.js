@@ -15,6 +15,7 @@ module.exports = {
       name: 'Admin',
       role: 'admin',
       mobile: '9876543210',
+      countryCode: '+1',
       email: 'admin@example.com',
       username: 'admin',
       password: bcrypt.hashSync('Admin#123', salt),
