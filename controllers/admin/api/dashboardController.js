@@ -15,11 +15,14 @@ const { UserDepartment } = require('../../../models/UserDepartment');
 const totalProUser = async (req, res) => {
     try {
         let {
-            page =1,
-            length =10,
-            isPro=1,
+            page = 1,
+            length = 10,
+            isPro = 1,
             isOnline,
-            keywords
+            keywords,
+            sortBy = 'id',
+            sortOrder = 'DESC',
+            clientId
         } = req.query;
 
         const offset = (parseInt(page) - 1) * parseInt(length);
@@ -27,16 +30,35 @@ const totalProUser = async (req, res) => {
         const whereCondition = {
             status: 'active',
             role: 'user',
-            isPro
+            isPro: parseInt(isPro)
         };
 
-        if (isOnline) {
+        if (isOnline !== undefined) {
             whereCondition.isOnline = parseInt(isOnline);
         }
+
+        if (clientId) {
+            whereCondition.clientId = parseInt(clientId);
+        }
+
         if (keywords) {
             whereCondition[Op.or] = [
-                { name: { [Op.like]: `%${keywords}%` } }
+                { name: { [Op.like]: `%${keywords}%` } },
+                { email: { [Op.like]: `%${keywords}%` } },
+                { username: { [Op.like]: `%${keywords}%` } }
             ];
+        }
+
+        // Build order clause
+        let orderClause = [['id', sortOrder]];
+        if (sortBy === 'isOnline') {
+            orderClause = [['isOnline', sortOrder], ['updatedAt', 'DESC']];
+        } else if (sortBy === 'lastActivity') {
+            orderClause = [['updatedAt', sortOrder]];
+        } else if (sortBy === 'name') {
+            orderClause = [['name', sortOrder]];
+        } else if (sortBy === 'client') {
+            orderClause = [['clientId', sortOrder]];
         }
 
         const total = await User.count({
@@ -45,13 +67,69 @@ const totalProUser = async (req, res) => {
 
         const users = await User.findAll({
             where: whereCondition,
-            order: [['id', 'DESC']],
+            include: [
+                {
+                    model: Client,
+                    as: 'client',
+                    attributes: ['id', 'name', 'status', 'isOnline'],
+                    required: false
+                }
+            ],
+            order: orderClause,
             limit: parseInt(length),
             offset: offset,
             distinct: true,
         });
 
-        return response(res, { users, total }, 'Pro users list retrieved successfully.', 200);
+        // Add comprehensive online status information
+        const usersWithOnlineStatus = users.map(user => {
+            const userData = user.toJSON();
+            userData.onlineStatus = {
+                isOnline: userData.isOnline === 1,
+                statusText: userData.isOnline === 1 ? 'Online' : 'Offline',
+                statusColor: userData.isOnline === 1 ? 'green' : 'gray',
+                lastActivity: userData.updatedAt,
+                clientOnline: userData.client?.isOnline === 1,
+                clientStatus: userData.client?.status || 'N/A'
+            };
+            return userData;
+        });
+
+        // Get online statistics
+        const onlineStats = {
+            totalOnline: usersWithOnlineStatus.filter(u => u.isOnline === 1).length,
+            totalOffline: usersWithOnlineStatus.filter(u => u.isOnline === 0).length,
+            onlineByClient: {}
+        };
+
+        // Group online users by client
+        usersWithOnlineStatus.forEach(user => {
+            const clientName = user.client?.name || 'No Client';
+            if (!onlineStats.onlineByClient[clientName]) {
+                onlineStats.onlineByClient[clientName] = { online: 0, offline: 0 };
+            }
+            if (user.isOnline === 1) {
+                onlineStats.onlineByClient[clientName].online++;
+            } else {
+                onlineStats.onlineByClient[clientName].offline++;
+            }
+        });
+
+        return response(res, { 
+            users: usersWithOnlineStatus, 
+            total,
+            page: parseInt(page),
+            length: parseInt(length),
+            totalPages: Math.ceil(total / parseInt(length)),
+            onlineStats,
+            filters: {
+                isOnline,
+                keywords,
+                clientId,
+                sortBy,
+                sortOrder
+            }
+        }, 'Pro users list with online status retrieved successfully.', 200);
     } catch (error) {
         return response(res, {}, error.message, 500);
     }

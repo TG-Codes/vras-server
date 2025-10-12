@@ -60,6 +60,148 @@ router.post('/refresh-token', refreshToken);
 router.delete('/logout', [authentication, roleAuthorization('admin')], logout);
 router.post('/change-password', [authentication, roleAuthorization('admin')], store);
 
+/**
+ * @swagger
+ * /admin/total-pro-users:
+ *   get:
+ *     summary: Get all pro users with online status tracking
+ *     description: Retrieve list of pro users with comprehensive online status information, filtering, and statistics
+ *     tags: [Admin User Management]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: length
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of items per page
+ *       - in: query
+ *         name: isPro
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Filter by pro user status
+ *       - in: query
+ *         name: isOnline
+ *         schema:
+ *           type: integer
+ *           enum: [0, 1]
+ *         description: Filter by online status (0=offline, 1=online)
+ *       - in: query
+ *         name: keywords
+ *         schema:
+ *           type: string
+ *         description: Search by name, email, or username
+ *       - in: query
+ *         name: clientId
+ *         schema:
+ *           type: integer
+ *         description: Filter by client ID
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [id, isOnline, lastActivity, name, client]
+ *           default: id
+ *         description: Sort field
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *           enum: [ASC, DESC]
+ *           default: DESC
+ *         description: Sort order
+ *     responses:
+ *       200:
+ *         description: Pro users list with online status retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: object
+ *                       properties:
+ *                         users:
+ *                           type: array
+ *                           items:
+ *                             allOf:
+ *                               - $ref: '#/components/schemas/User'
+ *                               - type: object
+ *                                 properties:
+ *                                   onlineStatus:
+ *                                     type: object
+ *                                     properties:
+ *                                       isOnline:
+ *                                         type: boolean
+ *                                       statusText:
+ *                                         type: string
+ *                                         enum: [Online, Offline]
+ *                                       statusColor:
+ *                                         type: string
+ *                                         enum: [green, gray]
+ *                                       lastActivity:
+ *                                         type: string
+ *                                         format: date-time
+ *                                       clientOnline:
+ *                                         type: boolean
+ *                                       clientStatus:
+ *                                         type: string
+ *                                   client:
+ *                                     $ref: '#/components/schemas/Client'
+ *                         total:
+ *                           type: integer
+ *                         page:
+ *                           type: integer
+ *                         length:
+ *                           type: integer
+ *                         totalPages:
+ *                           type: integer
+ *                         onlineStats:
+ *                           type: object
+ *                           properties:
+ *                             totalOnline:
+ *                               type: integer
+ *                             totalOffline:
+ *                               type: integer
+ *                             onlineByClient:
+ *                               type: object
+ *                         filters:
+ *                           type: object
+ */
+
+/**
+ * @swagger
+ * /admin/total-pro-users/{id}:
+ *   get:
+ *     summary: Get pro user details
+ *     description: Retrieve detailed information about a specific pro user
+ *     tags: [Admin User Management]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Pro user ID
+ *     responses:
+ *       200:
+ *         description: Pro user details retrieved successfully
+ *       404:
+ *         description: Pro user not found
+ */
+
 router.get('/total-pro-users', [authentication, roleAuthorization('admin')], dasboardController.totalProUser);
 router.get('/total-pro-users/:id', [authentication, roleAuthorization('admin')], dasboardController.proUserDetail);
 
