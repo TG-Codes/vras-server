@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "root",
+    "password": "admin#123",
+    "database": "vras",
+    "host": "0.0.0.0",
+    "dialect": "mysql"
+  },
+  "local": {
+    "username": "root",
+    "password": "admin#123",
+    "database": "vras",
+    "host": "0.0.0.0",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": "admin#123",
+    "database": "vras",
+    "host": "0.0.0.0",
+    "dialect": "mysql"
+  }
+}

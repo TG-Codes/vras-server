@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404, Page not found | <%= process.env.APP_NAME %></title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <a href="<%= process.env.APP_URL || 'http://0.0.0.0:5000' %>/api" class="form-row">
+    <img src="<%= process.env.APP_URL || 'http://0.0.0.0:5000' %>/public/img/404.png" alt="404, Page not found." width="100%" class="img-fluid">
+  </a>
+</body>
+</html>
