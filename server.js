@@ -35,6 +35,17 @@ app.use(session({
 const flash = require('express-flash');
 app.use(flash());
 
+// Swagger Documentation
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpecs = require('./config/swagger');
+
+// Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs, {
+    explorer: true,
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: 'VRAS API Documentation'
+}));
+
 // Method-override
 const methodOverride = require('method-override');
 app.use(methodOverride('_method'));

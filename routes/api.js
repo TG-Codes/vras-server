@@ -1,3 +1,20 @@
+/**
+ * @swagger
+ * tags:
+ *   - name: Authentication
+ *     description: User authentication and authorization
+ *   - name: User Management
+ *     description: User profile and management operations
+ *   - name: Client Management
+ *     description: Client organization and user management
+ *   - name: VR Training
+ *     description: Virtual reality training scenarios and sessions
+ *   - name: Analytics
+ *     description: Performance analytics and reporting
+ *   - name: Content Management
+ *     description: CMS, blogs, videos, and other content
+ */
+
 const express = require('express');
 const group = require('express-group-routes');
 
@@ -38,6 +55,22 @@ const instructorDashboardController = require('../controllers/api/instructors/da
 const userDashboardController = require('../controllers/api/users/dashboardController');
 const userMissionController = require('../controllers/api/clients/userMissionsController');
 
+/**
+ * @swagger
+ * /:
+ *   get:
+ *     summary: API Welcome endpoint
+ *     description: Returns welcome message for VRAS API
+ *     tags: [Authentication]
+ *     responses:
+ *       200:
+ *         description: Welcome message
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ */
+
 router.get('/', (req, res) => {
     try {
         return response(res, req.body, 'Welcome API', 200);
@@ -46,12 +79,182 @@ router.get('/', (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /register:
+ *   post:
+ *     summary: Register a new user
+ *     description: Creates a new user account in the VRAS system
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/RegisterRequest'
+ *     responses:
+ *       200:
+ *         description: User registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       422:
+ *         description: Validation error
+ *       500:
+ *         description: Server error
+ */
 router.post('/register', register);
+
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     summary: User login
+ *     description: Authenticate user with email and password
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LoginRequest'
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: object
+ *                       properties:
+ *                         user:
+ *                           $ref: '#/components/schemas/User'
+ *                         token:
+ *                           type: string
+ *       422:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
+ */
 router.post('/login', login);
+/**
+ * @swagger
+ * /refresh-token:
+ *   post:
+ *     summary: Refresh authentication token
+ *     description: Generate a new access token using refresh token
+ *     tags: [Authentication]
+ *     responses:
+ *       200:
+ *         description: Token refreshed successfully
+ *       401:
+ *         description: Invalid refresh token
+ */
 router.post('/refresh-token', refreshToken);
+
+/**
+ * @swagger
+ * /vrlogin:
+ *   post:
+ *     summary: VR Device Login
+ *     description: Special login for VR devices using code or username
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [credential]
+ *             properties:
+ *               credential:
+ *                 type: string
+ *                 description: User code or username for VR login
+ *     responses:
+ *       200:
+ *         description: VR login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       $ref: '#/components/schemas/User'
+ *       422:
+ *         description: Invalid credential or subscription expired
+ */
 router.post('/vrlogin', vrLogin);
+
+/**
+ * @swagger
+ * /forgot-password:
+ *   post:
+ *     summary: Request password reset
+ *     description: Send password reset email to user
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *     responses:
+ *       200:
+ *         description: Reset email sent successfully
+ */
 router.post('/forgot-password', forgotPassword);
+
+/**
+ * @swagger
+ * /reset-password:
+ *   post:
+ *     summary: Reset password
+ *     description: Reset user password using reset token
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [token, password]
+ *             properties:
+ *               token:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *                 minLength: 6
+ *     responses:
+ *       200:
+ *         description: Password reset successfully
+ */
 router.post('/reset-password', resetPassword);
+
+/**
+ * @swagger
+ * /logout:
+ *   delete:
+ *     summary: User logout
+ *     description: Logout user and invalidate token
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Logout successful
+ */
 router.delete('/logout', [authentication], logout);
 router.post('/change-password', [authentication], store);
 router.get('/site-settings/:key', settingsController.show);
@@ -72,7 +275,170 @@ router.group('/blogs', (router) => {
     router.get('/show/:slug', blogsController.show);
 });
 
+/**
+ * @swagger
+ * /scenarios:
+ *   get:
+ *     summary: Get available training scenarios
+ *     description: Retrieve list of all VR training scenarios
+ *     tags: [VR Training]
+ *     responses:
+ *       200:
+ *         description: Scenarios retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: object
+ *                       properties:
+ *                         scenarios:
+ *                           type: array
+ *                           items:
+ *                             $ref: '#/components/schemas/Scenario'
+ */
+
+/**
+ * @swagger
+ * /environments:
+ *   get:
+ *     summary: Get VR training environments
+ *     description: Retrieve list of available VR training environments
+ *     tags: [VR Training]
+ *     responses:
+ *       200:
+ *         description: Environments retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: object
+ *                       properties:
+ *                         environments:
+ *                           type: array
+ *                           items:
+ *                             $ref: '#/components/schemas/Environment'
+ */
+
+// VR Training Routes
+router.get('/scenarios', scenariosController.index);
+router.get('/environments', environmentController.index);
+
 // Clients Section //
+/**
+ * @swagger
+ * /clients/dashboard:
+ *   get:
+ *     summary: Get client dashboard data
+ *     description: Retrieve dashboard analytics and overview for client
+ *     tags: [Client Management]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Dashboard data retrieved successfully
+ *       401:
+ *         description: Unauthorized access
+ */
+
+/**
+ * @swagger
+ * /clients/pro-users:
+ *   get:
+ *     summary: Get pro users list
+ *     description: Retrieve list of pro users for the client
+ *     tags: [Client Management]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Pro users retrieved successfully
+ *   post:
+ *     summary: Create new pro user
+ *     description: Add a new pro user to the client organization
+ *     tags: [Client Management]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/RegisterRequest'
+ *     responses:
+ *       200:
+ *         description: Pro user created successfully
+ */
+
+/**
+ * @swagger
+ * /clients/live-sessions:
+ *   get:
+ *     summary: Get active live sessions
+ *     description: Retrieve list of currently active VR training sessions
+ *     tags: [VR Training]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Live sessions retrieved successfully
+ *   post:
+ *     summary: Start new live session
+ *     description: Create and start a new VR training session
+ *     tags: [VR Training]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [userId, scenarioId]
+ *             properties:
+ *               userId:
+ *                 type: integer
+ *               scenarioId:
+ *                 type: integer
+ *               environmentId:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Live session started successfully
+ */
+
+/**
+ * @swagger
+ * /clients/user-missions:
+ *   get:
+ *     summary: Get user mission results
+ *     description: Retrieve training mission results and analytics
+ *     tags: [Analytics]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Mission results retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Mission'
+ */
+
 router.group('/clients', (router) => {
     router.use([authentication]);
 
