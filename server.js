@@ -63,10 +63,17 @@ app.use(flash());
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./config/swagger');
 
+// Serve raw swagger JSON for UI to consume
+app.get('/api-docs.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerSpecs);
+});
+
 // Swagger UI with enhanced configuration
 const swaggerOptions = {
     explorer: true,
     swaggerOptions: {
+        url: '/api-docs.json',
         persistAuthorization: true,
         displayRequestDuration: true,
         filter: true,
@@ -241,7 +248,7 @@ const swaggerOptions = {
         }
     `,
     customSiteTitle: 'VRAS API Documentation - Virtual Reality Assessment System',
-    customfavIcon: '/favicon.ico',
+    customfavIcon: '/public/img/logo.png',
     customJs: [
         'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js'
     ],
