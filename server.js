@@ -70,8 +70,8 @@ app.get('/api-docs.json', (req, res) => {
     res.send(swaggerSpecs);
 });
 
-// Explicitly serve Swagger UI static assets to avoid path issues on Vercel
-app.use('/api-docs', express.static(swaggerUiDist.getAbsoluteFSPath()))
+// Explicitly serve Swagger UI static assets (ensures CSS loads correctly)
+app.use('/api-docs', express.static(swaggerUiDist.getAbsoluteFSPath()));
 
 // Swagger UI with enhanced configuration
 const swaggerOptions = {
@@ -269,7 +269,13 @@ const swaggerOptions = {
 };
 
 // Mount Swagger UI using explicit files/urls to ensure correct asset loading
-app.use('/api-docs', swaggerUi.serveFiles(swaggerSpecs, swaggerOptions), swaggerUi.setup(swaggerSpecs, swaggerOptions));
+app.use('/api-docs',
+    swaggerUi.serve,
+    (req, res, next) => {
+        // Ensure the UI loads the in-memory spec
+        swaggerUi.setup(swaggerSpecs, swaggerOptions)(req, res, next);
+    }
+);
 
 // Method-override
 const methodOverride = require('method-override');
