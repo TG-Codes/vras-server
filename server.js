@@ -62,12 +62,16 @@ app.use(flash());
 // Swagger Documentation
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./config/swagger');
+const swaggerUiDist = require('swagger-ui-dist');
 
 // Serve raw swagger JSON for UI to consume
 app.get('/api-docs.json', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.send(swaggerSpecs);
 });
+
+// Explicitly serve Swagger UI static assets to avoid path issues on Vercel
+app.use('/api-docs', express.static(swaggerUiDist.getAbsoluteFSPath()))
 
 // Swagger UI with enhanced configuration
 const swaggerOptions = {
@@ -264,7 +268,8 @@ const swaggerOptions = {
     ]
 };
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs, swaggerOptions));
+// Mount Swagger UI using explicit files/urls to ensure correct asset loading
+app.use('/api-docs', swaggerUi.serveFiles(swaggerSpecs, swaggerOptions), swaggerUi.setup(swaggerSpecs, swaggerOptions));
 
 // Method-override
 const methodOverride = require('method-override');
