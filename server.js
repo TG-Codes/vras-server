@@ -28,11 +28,24 @@ app.use(cookieParser());
 
 // Express-session
 const session = require('express-session');
-app.use(session({
-    secret: 'local',
-    saveUninitialized: true,
-    resave: true
-}));
+const MemoryStore = require('memorystore')(session);
+
+// Use MemoryStore for production (Vercel) or development
+const sessionConfig = {
+    secret: process.env.SESSION_SECRET || 'local',
+    saveUninitialized: false,
+    resave: false,
+    store: new MemoryStore({
+        checkPeriod: 86400000 // prune expired entries every 24h
+    }),
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+};
+
+app.use(session(sessionConfig));
 
 // Express-flash
 const flash = require('express-flash');
