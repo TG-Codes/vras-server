@@ -73,7 +73,6 @@ app.get('/api-docs.json', (req, res) => {
 const swaggerOptions = {
     explorer: true,
     swaggerOptions: {
-        url: '/api-docs.json',
         persistAuthorization: true,
         displayRequestDuration: true,
         filter: true,
