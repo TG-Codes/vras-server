@@ -39,12 +39,194 @@ app.use(flash());
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./config/swagger');
 
-// Swagger UI
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs, {
+// Swagger UI with enhanced configuration
+const swaggerOptions = {
     explorer: true,
-    customCss: '.swagger-ui .topbar { display: none }',
-    customSiteTitle: 'VRAS API Documentation'
-}));
+    swaggerOptions: {
+        persistAuthorization: true,
+        displayRequestDuration: true,
+        filter: true,
+        showExtensions: true,
+        showCommonExtensions: true,
+        tryItOutEnabled: true,
+        requestSnippetsEnabled: true,
+        syntaxHighlight: {
+            activate: true,
+            theme: 'agate'
+        },
+        defaultModelsExpandDepth: 2,
+        defaultModelExpandDepth: 2,
+        docExpansion: 'list',
+        operationsSorter: 'alpha',
+        tagsSorter: 'alpha',
+        deepLinking: true,
+        showMutatedRequest: true,
+        supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
+        validatorUrl: null,
+        onComplete: function() {
+            console.log('🎯 VRAS API Documentation loaded successfully!');
+            console.log('📚 Access comprehensive API docs with interactive testing');
+            console.log('🔐 Authentication: Use Bearer token from login endpoint');
+        }
+    },
+    customCss: `
+        .swagger-ui .topbar { 
+            display: none !important; 
+        }
+        .swagger-ui .info .title {
+            color: #2c3e50 !important;
+            font-size: 2.5rem !important;
+            font-weight: 700 !important;
+            margin-bottom: 1rem !important;
+        }
+        .swagger-ui .info .description {
+            font-size: 1.1rem !important;
+            line-height: 1.6 !important;
+            color: #34495e !important;
+            margin-bottom: 2rem !important;
+        }
+        .swagger-ui .scheme-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            border-radius: 8px !important;
+            padding: 1rem !important;
+            margin-bottom: 2rem !important;
+        }
+        .swagger-ui .btn.authorize {
+            background: #27ae60 !important;
+            border-color: #27ae60 !important;
+            color: white !important;
+            font-weight: 600 !important;
+            border-radius: 6px !important;
+            padding: 8px 16px !important;
+        }
+        .swagger-ui .btn.authorize:hover {
+            background: #229954 !important;
+            border-color: #229954 !important;
+        }
+        .swagger-ui .opblock.opblock-get {
+            border-color: #61affe !important;
+            background: rgba(97, 175, 254, 0.1) !important;
+        }
+        .swagger-ui .opblock.opblock-post {
+            border-color: #49cc90 !important;
+            background: rgba(73, 204, 144, 0.1) !important;
+        }
+        .swagger-ui .opblock.opblock-put {
+            border-color: #fca130 !important;
+            background: rgba(252, 161, 48, 0.1) !important;
+        }
+        .swagger-ui .opblock.opblock-delete {
+            border-color: #f93e3e !important;
+            background: rgba(249, 62, 62, 0.1) !important;
+        }
+        .swagger-ui .opblock .opblock-summary {
+            border-radius: 6px !important;
+        }
+        .swagger-ui .opblock .opblock-summary-description {
+            font-weight: 500 !important;
+            color: #2c3e50 !important;
+        }
+        .swagger-ui .opblock .opblock-summary-path {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+            font-weight: 600 !important;
+        }
+        .swagger-ui .parameter__name {
+            font-weight: 600 !important;
+            color: #2c3e50 !important;
+        }
+        .swagger-ui .parameter__type {
+            color: #7f8c8d !important;
+            font-weight: 500 !important;
+        }
+        .swagger-ui .response-col_status {
+            font-weight: 600 !important;
+        }
+        .swagger-ui .response-col_description__inner p {
+            color: #34495e !important;
+            line-height: 1.5 !important;
+        }
+        .swagger-ui .model-title {
+            color: #2c3e50 !important;
+            font-weight: 700 !important;
+        }
+        .swagger-ui .model .property {
+            color: #34495e !important;
+        }
+        .swagger-ui .model .property.primitive {
+            color: #8e44ad !important;
+        }
+        .swagger-ui .model .property.primitive .property-type {
+            color: #e74c3c !important;
+            font-weight: 600 !important;
+        }
+        .swagger-ui .btn.execute {
+            background: #3498db !important;
+            border-color: #3498db !important;
+            color: white !important;
+            font-weight: 600 !important;
+            border-radius: 6px !important;
+            padding: 8px 16px !important;
+        }
+        .swagger-ui .btn.execute:hover {
+            background: #2980b9 !important;
+            border-color: #2980b9 !important;
+        }
+        .swagger-ui .btn.try-out__btn {
+            background: #9b59b6 !important;
+            border-color: #9b59b6 !important;
+            color: white !important;
+            font-weight: 600 !important;
+            border-radius: 6px !important;
+            padding: 6px 12px !important;
+        }
+        .swagger-ui .btn.try-out__btn:hover {
+            background: #8e44ad !important;
+            border-color: #8e44ad !important;
+        }
+        .swagger-ui .highlight-code {
+            background: #f8f9fa !important;
+            border: 1px solid #e9ecef !important;
+            border-radius: 6px !important;
+            padding: 1rem !important;
+        }
+        .swagger-ui .response .microlight {
+            background: #2d3748 !important;
+            color: #e2e8f0 !important;
+            border-radius: 6px !important;
+            padding: 1rem !important;
+        }
+        .swagger-ui .info .base-url {
+            background: #ecf0f1 !important;
+            border-radius: 6px !important;
+            padding: 0.5rem 1rem !important;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+            font-weight: 600 !important;
+            color: #2c3e50 !important;
+        }
+        .swagger-ui .info .title:after {
+            content: " 🎯";
+            font-size: 2rem;
+        }
+        .swagger-ui .info .description:before {
+            content: "🚀 ";
+            font-size: 1.2rem;
+        }
+        .swagger-ui .info .description:after {
+            content: " 🌟";
+            font-size: 1.2rem;
+        }
+    `,
+    customSiteTitle: 'VRAS API Documentation - Virtual Reality Assessment System',
+    customfavIcon: '/favicon.ico',
+    customJs: [
+        'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js'
+    ],
+    customCssUrl: [
+        'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/agate.min.css'
+    ]
+};
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs, swaggerOptions));
 
 // Method-override
 const methodOverride = require('method-override');
