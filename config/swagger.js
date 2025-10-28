@@ -4,61 +4,9 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'VRAS API - Virtual Reality Assessment System',
+      title: 'VRAS API',
       version: '2.0.0',
-      description: `
-# VRAS API Documentation
-
-## 🎯 **Design-First API Development**
-
-Built with modern API workflow in mind, VRAS brings an intuitive interface and thoughtful features to power your complete tactical training API lifecycle.
-
-### **🚀 Key Features**
-- **Real-time User Tracking** - Monitor online users across all training sessions
-- **Comprehensive Training Scenarios** - 18+ VR training environments
-- **Multi-tenant Architecture** - Support for multiple client organizations
-- **Advanced Analytics** - Detailed performance metrics and reporting
-- **Role-based Access Control** - Secure admin, instructor, and user management
-
-### **🏢 Enterprise Ready**
-- **Scalable Architecture** - Built for high-performance training operations
-- **Comprehensive Security** - JWT authentication with role-based permissions
-- **Real-time Monitoring** - Live user activity and session tracking
-- **Multi-Environment Support** - Warehouse, Office, Mall, School, Hospital, Airport, Subway, Residential
-
-### **📊 Training Capabilities**
-- **Tactical Scenarios** - Active shooter, hostage situations, bomb threats
-- **Performance Metrics** - Accuracy, response time, casualty tracking
-- **Department Management** - SWAT, Patrol, Detective, Executive Protection
-- **Client Organizations** - Police, Security Corps, Universities, Federal Agencies
-
-### **🔧 Developer Experience**
-- **Interactive Documentation** - Try API endpoints directly in browser
-- **Comprehensive Examples** - Real-world request/response samples
-- **Error Handling** - Detailed error codes and troubleshooting guides
-- **SDK Support** - Ready for frontend integration
-
-### **🌐 API Endpoints**
-- **Authentication** - Secure login with JWT tokens
-- **User Management** - Complete CRUD operations for all user types
-- **Training Sessions** - Real-time VR training management
-- **Analytics** - Performance tracking and reporting
-- **Admin Panel** - Comprehensive administrative controls
-
----
-
-*Built with ❤️ for tactical training professionals worldwide*
-      `,
-      termsOfService: 'https://vras-server.vercel.app/terms',
-      contact: {
-        name: 'VRAS API Support',
-        url: 'https://vras-server.vercel.app/support',
-        email: 'support@vras.com'
-      },
-      license: {
-        name: 'MIT',
-        url: 'https://opensource.org/licenses/MIT'
-      },
+      description: '',
       'x-logo': {
         url: 'https://vras-server.vercel.app/logo.png',
         altText: 'VRAS - Virtual Reality Assessment System'
@@ -88,10 +36,7 @@ Built with modern API workflow in mind, VRAS brings an intuitive interface and t
         }
       }
     ],
-    externalDocs: {
-      description: 'VRAS API Guide',
-      url: 'https://vras-server.vercel.app/guide'
-    },
+    // externalDocs removed to simplify header
     components: {
       securitySchemes: {
         bearerAuth: {
