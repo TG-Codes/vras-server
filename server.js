@@ -103,6 +103,14 @@ const swaggerOptions = {
         .swagger-ui .topbar { 
             display: none !important; 
         }
+        /* Hide entire info header (title, version, description, OAS badge) */
+        .swagger-ui .info { 
+            display: none !important; 
+        }
+        /* Hide scheme/server selector block */
+        .swagger-ui .scheme-container {
+            display: none !important;
+        }
         .swagger-ui .info .title {
             color: #2c3e50 !important;
             font-size: 2.5rem !important;
