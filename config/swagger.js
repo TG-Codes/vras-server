@@ -53,45 +53,15 @@ Built with modern API workflow in mind, VRAS brings an intuitive interface and t
       contact: {
         name: 'VRAS API Support',
         url: 'https://vras-server.vercel.app/support',
-        email: 'support@vras.com',
-        x: {
-          'x-logo': {
-            url: 'https://vras-server.vercel.app/logo.png',
-            altText: 'VRAS Logo'
-          }
-        }
+        email: 'support@vras.com'
       },
       license: {
         name: 'MIT',
         url: 'https://opensource.org/licenses/MIT'
       },
-      x: {
-        'x-logo': {
-          url: 'https://vras-server.vercel.app/logo.png',
-          altText: 'VRAS - Virtual Reality Assessment System'
-        },
-        'x-tagGroups': [
-          {
-            name: 'Authentication',
-            tags: ['Auth', 'Login', 'Register', 'Password Reset']
-          },
-          {
-            name: 'User Management',
-            tags: ['Users', 'Clients', 'Instructors', 'Online Tracking']
-          },
-          {
-            name: 'Training System',
-            tags: ['Scenarios', 'Environments', 'Missions', 'Sessions']
-          },
-          {
-            name: 'Analytics & Reporting',
-            tags: ['Statistics', 'Performance', 'Reports', 'Dashboard']
-          },
-          {
-            name: 'Administration',
-            tags: ['Admin Panel', 'System Management', 'Configuration']
-          }
-        ]
+      'x-logo': {
+        url: 'https://vras-server.vercel.app/logo.png',
+        altText: 'VRAS - Virtual Reality Assessment System'
       }
     },
     servers: [
