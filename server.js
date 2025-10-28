@@ -28,22 +28,30 @@ app.use(cookieParser());
 
 // Express-session
 const session = require('express-session');
-const MemoryStore = require('memorystore')(session);
 
-// Use MemoryStore for production (Vercel) or development
-const sessionConfig = {
+// Use appropriate session store based on environment
+let sessionConfig = {
     secret: process.env.SESSION_SECRET || 'local',
     saveUninitialized: false,
     resave: false,
-    store: new MemoryStore({
-        checkPeriod: 86400000 // prune expired entries every 24h
-    }),
     cookie: {
         secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
 };
+
+// Use MemoryStore for production (Vercel) or development
+try {
+    const MemoryStore = require('memorystore')(session);
+    sessionConfig.store = new MemoryStore({
+        checkPeriod: 86400000 // prune expired entries every 24h
+    });
+    console.log('✅ Using memorystore for session management');
+} catch (error) {
+    console.log('⚠️ memorystore not available, using default session store');
+    // Fallback to default session store if memorystore fails
+}
 
 app.use(session(sessionConfig));
 

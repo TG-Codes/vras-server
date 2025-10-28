@@ -7,7 +7,8 @@ try {
     console.log('✅ mysql2 module loaded successfully');
 } catch (e) {
     console.error('❌ Failed to load mysql2 module:', e.message);
-    mysql2Module = undefined;
+    // In Vercel, we need to ensure mysql2 is available
+    throw new Error('mysql2 module is required but not available. Please ensure it is installed.');
 }
 
 // Support both individual env vars and MYSQL_URL format
