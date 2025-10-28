@@ -283,10 +283,14 @@ app.set('views', 'views');
 // ejs View Engine
 app.set('view engine', 'ejs');
 
-// Server listen
-var PORT = process.env.APP_PORT || 5000;
-var HOST = process.env.APP_HOST || '0.0.0.0';
-app.listen(PORT, HOST, (error) => {
-    if (error) throw error;
-    console.log(`Express server started at http://${HOST}:${PORT}/`);
-});
+// Export app for serverless (Vercel) and start server only locally
+if (process.env.VERCEL) {
+    module.exports = app;
+} else if (require.main === module) {
+    var PORT = process.env.APP_PORT || 5000;
+    var HOST = process.env.APP_HOST || '0.0.0.0';
+    app.listen(PORT, HOST, (error) => {
+        if (error) throw error;
+        console.log(`Express server started at http://${HOST}:${PORT}/`);
+    });
+}
