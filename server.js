@@ -260,61 +260,9 @@ require('./models/Associations');
 // Homepage Route
 app.get('/', (req, res) => {
     try {
-        // Return a comprehensive API welcome page
-        return res.json({
-            success: true,
-            message: 'Welcome to VRAS API - Virtual Reality Assessment System',
-            version: '2.0.0',
-            description: 'Professional tactical training platform with comprehensive VR scenarios',
-            documentation: {
-                swagger: '/api-docs',
-                description: 'Interactive API documentation with try-it-out functionality'
-            },
-            endpoints: {
-                api: '/api',
-                admin: '/api/admin',
-                docs: '/api-docs'
-            },
-            features: [
-                'Real-time User Tracking',
-                '18+ VR Training Scenarios',
-                'Multi-tenant Architecture',
-                'Advanced Analytics',
-                'Role-based Access Control',
-                'Interactive API Documentation'
-            ],
-            environments: [
-                'Warehouse', 'Office Building', 'Shopping Mall', 'School Campus',
-                'Hospital', 'Airport Terminal', 'Subway Station', 'Residential Area'
-            ],
-            clientOrganizations: [
-                'Metropolitan Police Department',
-                'Federal Security Corps',
-                'State University System',
-                'Federal Bureau of Investigation',
-                'Private Security Firms'
-            ],
-            quickStart: {
-                login: 'POST /api/login',
-                register: 'POST /api/register',
-                scenarios: 'GET /api/scenarios',
-                environments: 'GET /api/environments',
-                users: 'GET /api/admin/users'
-            },
-            support: {
-                email: 'support@vras.com',
-                documentation: 'https://vras-server.vercel.app/api-docs',
-                github: 'https://github.com/TG-Codes/vras-server'
-            },
-            status: 'operational',
-            timestamp: new Date().toISOString()
-        });
+        return res.redirect('/api-docs');
     } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: 'Server error',
-            error: error.message
-        });
+        return res.status(500).json({ success: false, message: 'Server error', error: error.message });
     }
 });
 
