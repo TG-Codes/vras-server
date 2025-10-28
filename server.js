@@ -6,6 +6,9 @@ require('dotenv').config();
 // Create Express app
 const app = express();
 
+// Ensure mysql2 is bundled/available in serverless runtime
+try { require('mysql2'); } catch (e) { /* no-op on local without mysql2 */ }
+
 // Cors
 const cors = require('cors');
 app.use(cors());
